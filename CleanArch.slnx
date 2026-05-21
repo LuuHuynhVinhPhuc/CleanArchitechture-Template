@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="CleanArch.Infrastructure/CleanArch.Infrastructure.csproj" />
+  <Project Path="CleanArch.API.Host/CleanArch.API.Host.csproj" />
+  <Project Path="CleanArch.Application/CleanArch.Application.csproj" />
+  <Project Path="CleanArch.Domain/CleanArch.Domain.csproj" />
+  <Project Path="CleanArch.MigratorDB/CleanArch.MigratorDB.csproj" />
+  <Project Path="CleanArch.Share/CleanArch.Share.csproj" />
+  <Project Path="CleanArch.Test/CleanArch.Test.csproj" />
+</Solution>
