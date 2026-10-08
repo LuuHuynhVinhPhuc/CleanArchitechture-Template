@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CleanArch.Infrastructure.Persistances
 {
     public static class DbInitializer
     {
         public static async Task SeedAsync(ApplicationDbContext context)
         {
-            // Ki?m tra xem database dã du?c t?o chua (th?c t? MigrateAsync dã làm vi?c này)
-
-            // Th?c hi?n Seed Data cho t?ng Entity ? dây
-            // Ví d?:
+            // The database schema is already created by MigrateAsync before this runs.
+            // Seed data for each entity here.
+            // Example:
             /*
             if (!await context.Users.AnyAsync())
             {

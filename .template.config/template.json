@@ -13,8 +13,67 @@
     "language": "C#",
     "type": "project"
   },
+  "description": "Clean Architecture solution (.NET 10, EF Core + PostgreSQL, MediatR, FluentValidation, Mapster). NuGet packages are updated to the latest stable versions when the solution is created.",
   "sourceName": "CleanArch",
   "preferNameDirectory": true,
+  "symbols": {
+    "UpdatePackages": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "displayName": "Update NuGet packages to latest",
+      "description": "Run 'dotnet package update' after creating the solution so every NuGet package is at the latest stable version. Set to false to keep the versions pinned in the template (e.g. when offline)."
+    },
+    "HostOS": {
+      "type": "bind",
+      "binding": "env:OS"
+    },
+    "IsTemplateSource": {
+      "type": "computed",
+      "value": "false"
+    },
+    "ImageName": {
+      "type": "derived",
+      "datatype": "string",
+      "valueSource": "name",
+      "valueTransform": "lowerCase",
+      "replaces": "clean-arch-template"
+    }
+  },
+  "postActions": [
+    {
+      "id": "update-packages-windows",
+      "description": "Update all NuGet packages to the latest stable versions",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "condition": "(UpdatePackages && HostOS == \"Windows_NT\")",
+      "continueOnError": true,
+      "manualInstructions": [
+        { "text": "Run 'dotnet package update' in the solution folder" }
+      ],
+      "args": {
+        "executable": "cmd",
+        "args": "/c \"dotnet package update & if errorlevel 2 (exit /b 0) else if errorlevel 1 (exit /b 1) else (exit /b 0)\"",
+        "redirectStandardOutput": "false",
+        "redirectStandardError": "false"
+      }
+    },
+    {
+      "id": "update-packages-unix",
+      "description": "Update all NuGet packages to the latest stable versions",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "condition": "(UpdatePackages && HostOS != \"Windows_NT\")",
+      "continueOnError": true,
+      "manualInstructions": [
+        { "text": "Run 'dotnet package update' in the solution folder" }
+      ],
+      "args": {
+        "executable": "sh",
+        "args": "-c \"dotnet package update; c=$?; if [ $c -eq 2 ]; then exit 0; fi; exit $c\"",
+        "redirectStandardOutput": "false",
+        "redirectStandardError": "false"
+      }
+    }
+  ],
   "sources": [
     {
       "modifiers": [

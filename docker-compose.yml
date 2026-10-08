@@ -5,10 +5,24 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5000:8080"
+      - "${API_PORT:-5000}:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=CleanArchDb;Username=postgres;Password=postgres
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=CleanArchDb;Username=postgres;Password=postgres;GSS Encryption Mode=Disable
+    depends_on:
+      db:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+
+  # One-shot job: applies EF Core migrations and seeds data, then exits.
+  migrator:
+    image: clean-arch-template-migrator
+    build:
+      context: .
+      dockerfile: CleanArch.MigratorDB/Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=CleanArchDb;Username=postgres;Password=postgres;GSS Encryption Mode=Disable
     depends_on:
       db:
         condition: service_healthy
@@ -20,7 +34,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: CleanArchDb
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

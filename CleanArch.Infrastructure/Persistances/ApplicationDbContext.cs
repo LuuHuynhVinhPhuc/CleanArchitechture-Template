@@ -33,7 +33,21 @@ namespace CleanArch.Infrastructure.Persistances
             return System.Linq.Expressions.Expression.Lambda(equal, parameter);
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        // Every SaveChanges/SaveChangesAsync overload ends up in one of these two,
+        // so overriding them keeps auditing and soft delete on the sync path as well.
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            ApplyAuditingAndSoftDelete();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            ApplyAuditingAndSoftDelete();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private void ApplyAuditingAndSoftDelete()
         {
             foreach (var entry in ChangeTracker.Entries<IAuditable>())
             {
@@ -57,8 +71,6 @@ namespace CleanArch.Infrastructure.Persistances
                     entry.Entity.DeletedAt = DateTimeOffset.UtcNow;
                 }
             }
-
-            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

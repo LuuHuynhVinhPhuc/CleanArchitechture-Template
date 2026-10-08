@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CleanArch.Domain.Abstractions
 {
-    internal interface IBaseEntity<TKey>
+    public interface IBaseEntity<TKey>
     {
         TKey Id { get; init; }
     }

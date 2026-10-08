@@ -1,3 +1,4 @@
+using CleanArch.Infrastructure;
 using CleanArch.Infrastructure.Persistances;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,9 +16,7 @@ var services = new ServiceCollection();
 
 services.AddSingleton<IConfiguration>(config);
 services.AddLogging(builder => builder.AddConsole());
-
-// Add infrastructure
-
+services.AddInfrastructure(config);
 
 var serviceProvider = services.BuildServiceProvider();
 using (var scope = serviceProvider.CreateScope())
@@ -42,5 +41,11 @@ using (var scope = serviceProvider.CreateScope())
     }
 }
 
-Console.WriteLine("Migration completed. Press any key to exit...");
-Console.ReadKey();
+Console.WriteLine("Migration completed.");
+
+// Only wait for a key press when a human is attached (not in Docker / CI).
+if (!Console.IsInputRedirected)
+{
+    Console.WriteLine("Press any key to exit...");
+    Console.ReadKey();
+}
